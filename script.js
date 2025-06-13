@@ -7,12 +7,15 @@ const puzzleData = [
     { category: "TYPED ONLY ON THE TOP ROW OF A KEYBOARD", words: ["TYPEWRITER", "PROPRIETOR", "PERPETUITY", "POTTERY"] }
 ];
 
+// --- Get references to our HTML elements ---
 const gridContainer = document.getElementById('grid-container');
 const solvedGroupsContainer = document.getElementById('solved-groups-container');
 const messageContainer = document.getElementById('message-container');
 const submitButton = document.getElementById('submit-button');
 const deselectAllButton = document.getElementById('deselect-all-button');
+const scrambleButton = document.getElementById('scramble-button'); // NEW: Get the scramble button
 
+// --- Game State Variables ---
 let selectedWords = [];
 let solvedCategories = [];
 
@@ -33,7 +36,7 @@ function initGame() {
 
 function handleTileClick(event) {
     const clickedTile = event.target;
-    if (clickedTile.classList.contains('solved')) return; // Ignore clicks on solved tiles
+    if (clickedTile.classList.contains('solved')) return;
     const word = clickedTile.textContent;
     if (selectedWords.includes(word)) {
         selectedWords = selectedWords.filter(w => w !== word);
@@ -88,10 +91,6 @@ function handleCorrectGuess(foundCategory) {
 
 function handleIncorrectGuess() {
     displayMessage("Not a group, try again!", "incorrect");
-    const selectedTiles = document.querySelectorAll('.grid-item.selected');
-    selectedTiles.forEach(tile => {
-        tile.classList.add('shake'); // Future enhancement: add a shake animation
-    });
 }
 
 function deselectAll() {
@@ -102,6 +101,30 @@ function deselectAll() {
     });
     updateSubmitButtonState();
 }
+
+// --------------------------------------------------------------------
+// NEW SCRAMBLE LOGIC STARTS HERE
+// --------------------------------------------------------------------
+/**
+ * Shuffles the remaining unsolved tiles in the grid.
+ */
+function scrambleGrid() {
+    // Get all tiles that are NOT solved yet
+    const unsolvedTiles = Array.from(gridContainer.querySelectorAll('.grid-item:not(.solved)'));
+
+    // Shuffle this array of tiles
+    for (let i = unsolvedTiles.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [unsolvedTiles[i], unsolvedTiles[j]] = [unsolvedTiles[j], unsolvedTiles[i]];
+    }
+
+    // Append the tiles back to the grid. Because they already exist,
+    // appendChild just moves them to the end, effectively reordering them.
+    unsolvedTiles.forEach(tile => {
+        gridContainer.appendChild(tile);
+    });
+}
+// --------------------------------------------------------------------
 
 function displayMessage(text, type, duration = 1500) {
     messageContainer.textContent = text;
@@ -119,7 +142,10 @@ function checkForWin() {
     }
 }
 
+// --- Event Listeners ---
 deselectAllButton.addEventListener('click', deselectAll);
 submitButton.addEventListener('click', handleSubmit);
+scrambleButton.addEventListener('click', scrambleGrid); // NEW: Add listener for scramble button
 
+// Start the game!
 initGame();

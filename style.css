@@ -75,6 +75,16 @@ button {
 #submit-button:hover, #deselect-all-button:hover { filter: brightness(0.9); }
 #submit-button:disabled { background-color: #a9a9a9; cursor: not-allowed; }
 
+#scramble-button {
+    background-color: #1877f2; /* A nice blue color */
+    color: white;
+}
+
+/* You can also add a hover effect if you like */
+#scramble-button:hover {
+    filter: brightness(0.9);
+}
+
 /* ---------------------------------- */
 /* --- NEW STYLES FOR FINAL POLISH -- */
 /* ---------------------------------- */
